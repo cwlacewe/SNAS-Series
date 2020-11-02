@@ -32,20 +32,26 @@ By Shoukang Hu*, Sirui Xie*, Hehui Zheng, Chunxiao Liu, Jianping Shi, Xunying Li
   
 * some codes are borrowed from **Single Path One-Shot NAS** ([https://github.com/megvii-model/ShuffleNet-Series/tree/master/OneShot], one baseline in our paper) and **Sparse Switchable Normalization** [https://github.com/switchablenorms/Sparse_SwitchNorm]
 
+We exported the GPU environment we used for this code.  To create and activate the conda environment:
+```bash
+conda env create --file environment.yml --name dsnas --force
+conda activate dsnas
+```
+
 ### Data Preparation
-- Download the ImageNet dataset and put them into the `{repo_root}/data/imagenet`
+- Download the ImageNet dataset and put them into the `{repo_root}/data/imagenet` or change values in provided config files
 
 ### Usage
-Search:
+Search using 4 GPUs:
 ```shell
-python -m torch.distributed.launch --nproc_per_node=8 train_imagenet.py \
+python -m torch.distributed.launch --nproc_per_node=4 train_imagenet.py \
 --SinglePath --bn_affine --flops_loss --flops_loss_coef 1e-6 --seed 48 --use_dropout --gen_max_child --early_fix_arch --config configs/SinglePath240epoch_arch_lr_1e-3_decay_0.yaml \
 --remark 'search_arch_lr_1e-3_decay_0' &
 ```
 
 Or you can try a more stable version of the searching command:
 ```shell
-python -m torch.distributed.launch --nproc_per_node=8 train_imagenet.py \
+python -m torch.distributed.launch --nproc_per_node=4 train_imagenet.py \
 --SinglePath --bn_affine --flops_loss --flops_loss_coef 1e-6 --seed 48 --use_dropout --pretrain_epoch {pretrain_num} --gen_max_child --early_fix_arch --config configs/SinglePath240epoch_arch_lr_1e-3_decay_0.yaml \
 --remark 'search_arch_lr_1e-3_decay_0' &
 ```
@@ -53,15 +59,15 @@ Note that {pretrain_num} can be set as 15 or 30, and you can disable the dropout
 
 After searching the Supernet with the early-stop strategy for {num} (default value: 80) peochs, we continue the searching stage with the following command: 
 ```shell
-python -m torch.distributed.launch --nproc_per_node=8 train_imagenet_child.py \
+python -m torch.distributed.launch --nproc_per_node=4 train_imagenet_child.py \
 --SinglePath --bn_affine --reset_bn_stat --seed 48 --config configs/{config_name} \
 --remark {remark_name} &
 ```
 Note that you need to add your current model path into the checkpoint_path of {config_name} (refer to configs/DSNAS_search_from_search_20191029_135429_80epoch.yaml). And we disable dropout layer to get a more stable result (you can use dropout to get better results, but you may also introduce a larger variance to the results). 
 
-Retrain:
+Retrain using 4 GPUs:
 ```shell
-python -m torch.distributed.launch --nproc_per_node=8 train_imagenet_child.py \
+python -m torch.distributed.launch --nproc_per_node=4 train_imagenet_child.py \
 --SinglePath --retrain --bn_affine --reset_bn_stat --seed 48 --config configs/{config_name} \
 --remark {remark_name} &
 ```
@@ -69,7 +75,7 @@ Note that you need to add your current model path into the checkpoint_path of {c
 
 Tensorboard visualization: 
 ```shell
-tensorboard --logdir=runs/ --port={port_num}
+tensorboard --logdir=runs/
 ```
 Note that all the experiments above will save the tensorboard log file in runs/ directory
 
