@@ -145,7 +145,7 @@ def main():
 
     # auto resume from a checkpoint
     remark = 'imagenet_'
-    remark += 'epo_' + str(args.epochs) + '_layer_' + str(args.layers) + '_batch_' + str(args.batch_size) + '_lr_' + str(float("{0:.2f}".format(args.base_    lr))) + '_seed_' + str(args.seed)
+    remark += 'epo_' + str(args.epochs) + '_layer_' + str(args.layers) + '_batch_' + str(args.batch_size) + '_lr_' + str(float("{0:.2f}".format(args.base_lr))) + '_seed_' + str(args.seed)
 
     if args.remark != 'none':
         remark += '_'+args.remark
