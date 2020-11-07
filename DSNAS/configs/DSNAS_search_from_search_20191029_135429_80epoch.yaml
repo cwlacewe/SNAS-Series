@@ -21,10 +21,9 @@ TRAIN:
 
     print_freq: 100
     model_dir: ckpts_1_5_x
-    checkpoint_path: 2019-10-29/search-EXP-20191029-135429-imagenet_epo_240_layer_20_batch_1024_lr_0.5_seed_24_early_fix_arch_flops_loss_1e-06_search_add_bnaffine_bneps_1e-2_arch_lr_1e-3/model.pth-80
+    checkpoint_path: 2020-10-29/search-EXP-20201029-100813-imagenet_epo_240_layer_20_batch_1024_lr_0.5_seed_48_pretrain_15_early_fix_arch_flops_loss_1e-06_search_arch_lr_1e-3_decay_0/model-best.pth
 
-    train_root: /mnt/lustre/share/images/train
-    train_source: /mnt/lustre/share/images/meta/train.txt
-    val_root: /mnt/lustre/share/images/val
-    val_source: /mnt/lustre/share/images/meta/val.txt
-
+    train_root: /nvme1/datasets/ilsvrc2012/train
+    train_source: /nvme1/datasets/ilsvrc2012/train.txt
+    val_root: /nvme1/datasets/ilsvrc2012/val
+    val_source: /nvme1/datasets/ilsvrc2012/val.txt

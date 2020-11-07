@@ -17,31 +17,30 @@ By Shoukang Hu*, Sirui Xie*, Hehui Zheng, Chunxiao Liu, Jianping Shi, Xunying Li
     <img src="img/search_result.png" height="400"/>
 </p>
 
-## Getting Started
-* Install [PyTorch](http://pytorch.org/)
-* Clone the repo:
-  ```
-  git clone https://github.com/SNAS-Series/SNAS-Series.git
-  ```
-
 ## Requirements
 * python packages
   * pytorch>=0.4.0
   * torchvision>=0.2.1
-  * tensorboardX
-  
+  * tensorboardX  
 * some codes are borrowed from **Single Path One-Shot NAS** ([https://github.com/megvii-model/ShuffleNet-Series/tree/master/OneShot], one baseline in our paper) and **Sparse Switchable Normalization** [https://github.com/switchablenorms/Sparse_SwitchNorm]
 
-We exported the GPU environment we used for this code.  To create and activate the conda environment:
+## Getting Started
+* Clone the repo:
+  ```
+  git clone https://github.com/cwlacewe/SNAS-Series.git
+  ```
+
+We used Anaconda environment. To create and activate the conda environment:
 ```bash
 conda env create --file environment.yml --name dsnas --force
 conda activate dsnas
 ```
 
 ### Data Preparation
-- Download the ImageNet dataset and put them into the `{repo_root}/data/imagenet` or change values in provided config files
+- Download the ImageNet dataset and put them into the `{repo_root}/data/imagenet` or change values in provided config files.
 
 ### Usage
+#### Search
 Search using 4 GPUs:
 ```shell
 python -m torch.distributed.launch --nproc_per_node=4 train_imagenet.py \
@@ -57,7 +56,7 @@ python -m torch.distributed.launch --nproc_per_node=4 train_imagenet.py \
 ```
 Note that {pretrain_num} can be set as 15 or 30, and you can disable the dropout layer befrore the linear output layer by not using --use_dropout.
 
-After searching the Supernet with the early-stop strategy for {num} (default value: 80) peochs, we continue the searching stage with the following command: 
+After searching the Supernet with the early-stop strategy for {num} (default value: 80) epochs, we continue the searching stage with the following command: 
 ```shell
 python -m torch.distributed.launch --nproc_per_node=4 train_imagenet_child.py \
 --SinglePath --bn_affine --reset_bn_stat --seed 48 --config configs/{config_name} \
@@ -65,7 +64,8 @@ python -m torch.distributed.launch --nproc_per_node=4 train_imagenet_child.py \
 ```
 Note that you need to add your current model path into the checkpoint_path of {config_name} (refer to configs/DSNAS_search_from_search_20191029_135429_80epoch.yaml). And we disable dropout layer to get a more stable result (you can use dropout to get better results, but you may also introduce a larger variance to the results). 
 
-Retrain using 4 GPUs:
+#### Retrain Child Network From Scratch
+Retrain child network from scratch using 4 GPUs:
 ```shell
 python -m torch.distributed.launch --nproc_per_node=4 train_imagenet_child.py \
 --SinglePath --retrain --bn_affine --reset_bn_stat --seed 48 --config configs/{config_name} \
@@ -73,6 +73,7 @@ python -m torch.distributed.launch --nproc_per_node=4 train_imagenet_child.py \
 ```
 Note that you need to add your current model path into the checkpoint_path of {config_name} (refer to configs/DSNAS_retrain_from_search_20191029_135429_80epoch.yaml)
 
+### Visualize Runs
 Tensorboard visualization: 
 ```shell
 tensorboard --logdir=runs/
@@ -86,6 +87,7 @@ Note that all the experiments above will save the tensorboard log file in runs/ 
 |DSNASretrain240 | 74.3% | 91.90% |[[Google Drive]](https://drive.google.com/open?id=1DlByBmUhaqzyKC_10MFxfTKbyFnYr6rX)  [[Baidu Pan (pin:6grj)]](https://pan.baidu.com/s/1NOK4jQNjJxUXSlmv4w4MzA)|459098b27704524927fbd8ed34570103|  
 |SPOSretrain240  | 74.3% | 91.78% |[[Google Drive]](https://drive.google.com/open?id=1nBdQf6G0l-NXTKWa0jjezY1hlsSA61lR)  [[Baidu Pan (pin:cj97)]](https://pan.baidu.com/s/1hemPkcvFwRtQCO5oM0m-YQ)|3350e439c1f75cbf61c4664c21d821c4|  
 
+### Evaluate Model
 Evaluation:
 ```shell
 python -m torch.distributed.launch --nproc_per_node=8 eval_imagenet.py \
@@ -94,7 +96,7 @@ python -m torch.distributed.launch --nproc_per_node=8 eval_imagenet.py \
 where {config_name} could be DSNASsearch240.yaml, DSNASretrain240.yaml, SPOSretrain240.yaml
 
 ### Citation
-If you find our codes or trined models useful in your research, please consider to star our repo and cite our paper:
+If you find the codes or trained models useful in your research, please consider to star our repo or author's repo (https://github.com/SNAS-Series/SNAS-Series) and cite their paper:
 
     @inproceedings{hu2020dsnas,
       title={DSNAS: Direct Neural Architecture Search without Parameter Retraining},
