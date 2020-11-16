@@ -1,6 +1,6 @@
 # SNAS-Series
 
-This contains the PyTorch implementation of the SNAS-Series papers, including
+This repo was forked from [SNAS-Series/SNAS-Series](https://github.com/SNAS-Series/SNAS-Series). It contains the PyTorch implementation of the SNAS-Series papers (with some modifications), including
 
 **SNAS: 
 Stochastic Neural Architecture Search**, ICLR 2019.
